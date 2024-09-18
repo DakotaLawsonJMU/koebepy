@@ -1,0 +1,157 @@
+# Declare your prototile(s) with the syntax | prototile <name> |
+prototile chair
+
+# Define the points which make up your prototile(s) with the let keyword | let <name> be (<comma seperated point names>)
+let chair be (A, B, C, D, E, F, G, H)
+
+# Maybe there is a way to make none of this matter, posibly by defining how many subtiles of which prototiles we need
+# For this one we could say "let 4 chair subtiles"
+# Then we need to tell the program where they go Im not really how to do this part without basically doing the same thing with defining new points idk
+
+
+# To define how your prototiles are subdivided, you must first create the vertices that will define the subtiles
+# Use the following | create verticies for <name> () |
+# You can use the splits keyword inside the parenthesis to create a new point which splits a line segment | <new vertex name> splits <Line segment XY>
+# Further, you can define new points that are on the interior of the prototile with | new vertex <name> |
+
+create verticies for chair (
+    a splits AB
+    b splits BC
+    c splits CD
+    d splits DE
+    e splits EF
+    f splits FG
+    g splits GH
+    h splits HA 
+    new vertex i
+    new vertex j
+    new vertex k
+    new vertex l
+    new vertex m
+)
+
+# Next use the points you created to define the subtiles
+create subtiles for chair (
+    new subtile (A, a, B, j, k, l, H, h)
+    new subtile (G, g, H, l, m, e, F, f)
+    new subtile (k, j, i, d, E, e, m, l)
+    new subtile (C, c, D, d, i, j, B, b)
+)
+
+# Create your circle packing with the following line | create circle packing ("<file location>", <depth>, <root prototile>) |
+# The file location is where you want the svg of your circle packing to be saved
+# The depth is how many levels of the tiling you want to generate
+# The root prototile is which prototile you wish the tiling to begin with
+create circle packing ("/home/user/chairPacking.svg", 2, chair)
+
+# The final program looks as following
+prototile chair
+
+let chair be (A, B, C, D, E, F, G, H)
+
+create verticies for chair (
+    a splits AB
+    b splits BC
+    c splits CD
+    d splits DE
+    e splits EF
+    f splits FG
+    g splits GH
+    h splits HA 
+    new vertex i
+    new vertex j
+    new vertex k
+    new vertex l
+    new vertex m
+)
+
+create subtiles for chair (
+    new subtile (A, a, B, j, k, l, H, h)
+    new subtile (G, g, H, l, m, e, F, f)
+    new subtile (k, j, i, d, E, e, m, l)
+    new subtile (C, c, D, d, i, j, B, b)
+)
+
+create circle packing ("/home/user/chairPacking.svg", 2, chair)
+
+
+
+########################################
+# Apply the rules
+########################################
+
+tiling = rules.generateTiling("chair", depth = 2)
+
+# print("The level 4 chair tiling has")
+# print(f"\t{len(tiling.verts)} vertices,")
+# print(f"\t{len(tiling.edges)} edges, and")
+# print(f"\t{len(tiling.faces)-1} tiles.")
+
+# GeometricTilingViewer(tiling, 
+#                       size=(800, 800), 
+#                       shadedLevel=3, #colors in super tiles at a particular level
+#                       style_fn=tileIdx_fill_fromList(["red", "green", "blue", "orange", "violet", "#30a"])
+#                      ).show()
+
+packing, _ = generateCirclePackingLayout(tiling)
+
+svg = SvgMaker(packing)
+svg.generateSVG("../ChairTiling.svg")
+
+########################################
+# Set up the finite subdivision rules
+########################################
+
+# The chair tiling only has one prototile
+pent_rules = TilingRules()
+
+pent = pent_rules.createPrototile("pent", tuple("ABCDE"))
+
+# Edges that need to be split
+pent.addSplitEdgeRules(((("A","B"), ("a", "b")), 
+                        (("B","C"), ("c", "d")), 
+                        (("C","D"), ("e", "f")),
+                        (("D","E"), ("g", "h")), 
+                        (("E","A"), ("i", "j"))))
+
+# New vertices to create
+pent.addNewVertexRules(("k"))
+
+# The subdivision subtiles: 
+pent.addSubtile("pent", tuple("Aabkj"))
+pent.addSubtile("pent", tuple("Bcdkb"))
+pent.addSubtile("pent", tuple("Cefkd"))
+pent.addSubtile("pent", tuple("Dghkf"))
+pent.addSubtile("pent", tuple("Eijkh"))
+
+########################################
+# Apply the rules
+########################################
+
+pent_tiling = pent_rules.generateTiling("pent", depth = 2)
+
+pent_packing, _ = generateCirclePackingLayout(pent_tiling)
+
+svg = SvgMaker(pent_packing)
+svg.generateSVG("../ChairTilingPent.svg")
+
+
+
+
+
+
+# function to define the points that arnt just split from other lines, we need to find a better way of doing this to make it simple for the user
+# Do we care about this if we are only generating circle packings and not regular tilings probablly not right?
+def chair_newverts(vDict):
+    a = vDict["a"].point
+    h = vDict["h"].point
+    A = vDict["A"].point
+    
+    e0 = a - A
+    e1 = h - A
+    
+    vDict["i"].point = A + 3 * e0 + e1
+    vDict["j"].point = A + 2 * e0 + e1
+    vDict["k"].point = A + e0 + e1
+    vDict["l"].point = A + e0 + 2 * e1
+    vDict["m"].point = A + e0 + 3 * e1

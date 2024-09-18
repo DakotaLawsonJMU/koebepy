@@ -1,0 +1,28 @@
+prototile chair
+
+let chair be (A, B, C, D, E, F, G, H)
+
+create verticies for chair {
+    a splits AB
+    b splits BC
+    c splits CD
+    d splits DE
+    e splits EF
+    f splits FG
+    g splits GH
+    h splits HA 
+    new vertex i
+    new vertex j
+    new vertex k
+    new vertex l
+    new vertex m
+}
+
+create subtiles for chair {
+    new subtile (A, a, B, j, k, l, H, h) of type chair
+    new subtile (G, g, H, l, m, e, F, f) of type chair
+    new subtile (k, j, i, d, E, e, m, l) of type chair
+    new subtile (C, c, D, d, i, j, B, b) of type chair
+}
+
+create circle packing (../chairPackingKoebelang.svg, 2, chair)

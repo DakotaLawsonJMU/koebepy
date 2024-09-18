@@ -1,0 +1,22 @@
+prototile pent
+
+let pent be (A, B, C, D, E)
+
+create verticies for pent {
+    a and b splits AB
+    c and d splits BC
+    e and f splits CD
+    g and h splits DE
+    i and j splits EA
+    new vertex k
+}
+
+create subtiles for pent {
+    new subtile (A, a, b, k, j) of type pent
+    new subtile (B, c, d, k, b) of type pent
+    new subtile (C, e, f, k, d) of type pent
+    new subtile (D, g, h, k, f) of type pent
+    new subtile (E, i, j, k, h) of type pent
+}
+
+create circle packing (../pent.svg, 2, pent)

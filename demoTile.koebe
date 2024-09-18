@@ -1,0 +1,23 @@
+prototile square
+prototile tri
+
+let square be (A, B, C, D, E, F, G, H, I, J)
+let tri be (A, B, C, D, E, F)
+
+create verticies for square {
+    a splits AB
+    b splits BC
+    c and d splits CD
+    e and f splits DA
+    new vertex g
+}
+
+create verticies for tri {
+    a splits AB
+    b splits BC
+    c splits CA
+}
+
+create subtiles for square {
+    new subtile (A, a, g, f) of type Square 
+}
