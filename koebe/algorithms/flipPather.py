@@ -12,7 +12,7 @@ def calculateFlipPath(triA: DCEL, triB: DCEL):
     Returns:
         the flip path between triA and triB.
     """
-    # Find the flip path between each trianguation and the canonical triangulation
+    # Find the flip path between each trianguation and the canonical triangulation (c)
     aToC = triToCanonical(triA)
     bToC = triToCanonical(triB)
     cToB = bToC[::-1]
@@ -32,3 +32,37 @@ def triToCanonical(tri: DCEL):
     # To transform a given triangulation into the canonical one, we fix an outer face and pick two of its
     # vertices, say a and b, to become the dominant vertices in the canonical triangulation. If a is not adjacent
     # to all other vertices, there exists a face uwv such that u and w are neighbours of a, while v is not. We flip the edge uw.
+
+    # Duplicate the DECL so we can be destructive during this algorithm
+    dTri = tri.duplicate()
+
+    # Init path
+    path = []
+    
+    # First we start by picking a node for a and b
+    outerFace = dTri.boundaryVerts()
+    a = outerFace[0]
+    b = outerFace[1]
+
+    while True:
+        # Identify w
+        w = 0
+
+        # Check if we are done
+        if (w in outerFace): break
+
+        # Identify u
+        u = 0
+
+        # Find the face uwv
+        uwv = 0
+
+        # Find the complimentary face of edge uw
+        uwk = 0
+
+        # Flip the edge uw
+
+        # Add edge uw to the path
+        pass
+
+    return path
