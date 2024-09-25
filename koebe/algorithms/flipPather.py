@@ -43,26 +43,52 @@ def triToCanonical(tri: DCEL):
     outerFace = dTri.boundaryVerts()
     a = outerFace[0]
     b = outerFace[1]
-
+    
     while True:
-        # Identify w
-        w = 0
+        aNeighbors = a.neighbors()
 
-        # Check if we are done
-        if (w in outerFace): break
+        # Find u, w, and v where u and w are adjacent to a and v is not
+        v = None
+        for aNeighbor in aNeighbors:
+            if aNeighbor == b:
+                continue
 
-        # Identify u
-        u = 0
+            for uNeighbor in aNeighbor.neighbors():
+                if uNeighbor == b:
+                    continue
 
-        # Find the face uwv
-        uwv = 0
+                u = None
+                v = None
+                if uNeighbor not in aNeighbors:
+                    u = aNeighbor
+                    v = uNeighbor
+                    w = None
+                    vNeighbors = v.neighbors()
+                    for vNeighbor in vNeighbors:
+                        if (vNeighbor != u and a in vNeighbor.neigbors()):
+                            w = vNeighbor
+                            break
+                    
+                    if w != None:
+                        break
+            
+            if v != None and u != None and w != None:
+                break
 
-        # Find the complimentary face of edge uw
-        uwk = 0
+        # If a is adjacent to all verticies in tri then tri is the canonical triangulation
+        if v == None:
+            break
+
+        # Find the faces uwv and uwa
+        for face in dTri.faces():
+            if all(x in face.vertices() for x in [u, w, v]):
+                uwv = face
+                continue
+            if all(x in face.vertices() for x in [u, w, a]):
+                uwa = face
+                continue
 
         # Flip the edge uw
-
-        # Add edge uw to the path
-        pass
+        
 
     return path
