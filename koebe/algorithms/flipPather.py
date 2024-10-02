@@ -1,4 +1,4 @@
-from ..datastructures.dcel import DCEL
+from ..datastructures.dcel import DCEL, Dart
 
 
 def calculateFlipPath(triA: DCEL, triB: DCEL):
@@ -43,52 +43,66 @@ def triToCanonical(tri: DCEL):
     outerFace = dTri.boundaryVerts()
     a = outerFace[0]
     b = outerFace[1]
-    
-    while True:
-        aNeighbors = a.neighbors()
 
+    aNeighbors = a.neighbors()
+    for vert in dTri.verts:
+        if vert in aNeighbors:
+            vert.neighborsA = True
+        else:
+            vert.neighborsA = False
+
+    while True:
         # Find u, w, and v where u and w are adjacent to a and v is not
         v = None
-        for aNeighbor in aNeighbors:
-            if aNeighbor == b:
-                continue
-
-            for uNeighbor in aNeighbor.neighbors():
-                if uNeighbor == b:
-                    continue
-
-                u = None
-                v = None
-                if uNeighbor not in aNeighbors:
-                    u = aNeighbor
-                    v = uNeighbor
-                    w = None
-                    vNeighbors = v.neighbors()
-                    for vNeighbor in vNeighbors:
-                        if (vNeighbor != u and a in vNeighbor.neigbors()):
-                            w = vNeighbor
-                            break
-                    
-                    if w != None:
-                        break
-            
-            if v != None and u != None and w != None:
+        u = None
+        w = None
+        for vT in dTri.verts:
+            if u != None:
                 break
+            if vT.neighborsA:
+                continue
+            for vNeigh in vT.neighbors(): # Could possibly do the set intersection here to combine work
+                if u != None:
+                    break
+                if vNeigh == b or not vNeigh.neighborsA:
+                    continue
+                uT = vNeigh
+                for uNeigh in uT.neighbors(): 
+                    if uNeigh == b or not uT.neighborsA:
+                        continue
+                    if uNeigh in vT.neighbors():
+                        w = uNeigh
+                        u = uT
+                        v = vT
+                        break
 
         # If a is adjacent to all verticies in tri then tri is the canonical triangulation
         if v == None:
             break
 
-        # Find the faces uwv and uwa
-        for face in dTri.faces():
-            if all(x in face.vertices() for x in [u, w, v]):
-                uwv = face
-                continue
-            if all(x in face.vertices() for x in [u, w, a]):
-                uwa = face
-                continue
+        # Find the edge uw
+        uw = None
+        for dart in u.inDarts():
+            if dart.origin == w:
+                uw = dart
+
+        # Add uw to path
+        path.append(uw)
 
         # Flip the edge uw
-        
+        flip(dTri, uw)
 
     return path
+
+
+def flip(tri: DCEL, edge: Dart):
+    """Flips the shared edge of two triangulations. 
+    
+    Args:
+        tri: The triangulation.
+        edge: The edge to flip
+    
+    Returns:
+        True if the flip was successful.
+    """
+
