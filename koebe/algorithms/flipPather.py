@@ -1,4 +1,4 @@
-from ..datastructures.dcel import DCEL, Dart
+from ..datastructures.dcel import DCEL, Edge
 
 
 def calculateFlipPath(triA: DCEL, triB: DCEL):
@@ -45,46 +45,33 @@ def triToCanonical(tri: DCEL):
     b = outerFace[1]
 
     aNeighbors = a.neighbors()
+    bNeighbors = b.neighbors()
     for vert in dTri.verts:
-        if vert in aNeighbors:
-            vert.neighborsA = True
-        else:
-            vert.neighborsA = False
+        vert.neighborsA = vert in aNeighbors
+        vert.neighborsB = vert in bNeighbors
 
     while True:
-        # Find u, w, and v where u and w are adjacent to a and v is not
-        v = None
-        u = None
-        w = None
-        for vT in dTri.verts:
-            if u != None:
-                break
-            if vT.neighborsA:
-                continue
-            for vNeigh in vT.neighbors(): # Could possibly do the set intersection here to combine work
-                if u != None:
-                    break
-                if vNeigh == b or not vNeigh.neighborsA:
-                    continue
-                uT = vNeigh
-                for uNeigh in uT.neighbors(): 
-                    if uNeigh == b or not uT.neighborsA:
-                        continue
-                    if uNeigh in vT.neighbors():
-                        w = uNeigh
-                        u = uT
-                        v = vT
-                        break
-
-        # If a is adjacent to all verticies in tri then tri is the canonical triangulation
-        if v == None:
-            break
-
-        # Find the edge uw
+        aSide = True
         uw = None
-        for dart in u.inDarts():
-            if dart.origin == w:
-                uw = dart
+        for edge in dTri.edges:
+            endPts = edge.endPoints()
+            if (endPts[0] == a or endPts[0] == b or endPts[1] == a or endPts[1] == b):
+                continue
+            bothNeighborA = endPts[0].neighborsA and endPts[1].neighborsA
+            bothNeighborB = endPts[0].neighborsB and endPts[1].neighborsB
+            if bothNeighborA and not bothNeighborB:
+                uw = edge
+                aSide = True
+                break
+            if bothNeighborB and not bothNeighborA:
+                uw = edge
+                aSide = False
+                break
+
+
+        # If there is no edge uw where its incedent faces are not auw and buw then dTri is the canonical tri
+        if uw == None:
+            break
 
         # Add uw to path
         path.append(uw)
@@ -92,10 +79,19 @@ def triToCanonical(tri: DCEL):
         # Flip the edge uw
         flip(dTri, uw)
 
+        # Update v's neighbor status
+        for face in uw.incidentFaces():
+            for v in face.verticies():
+                if v != a and v != uw.endPoints()[0] and v != uw.endPoints()[1]:
+                    if aSide:
+                        v.neighborsA = True
+                    else:
+                        v.neighborsB = True
+
     return path
 
 
-def flip(tri: DCEL, edge: Dart):
+def flip(tri: DCEL, edge: Edge):
     """Flips the shared edge of two triangulations. 
     
     Args:
@@ -105,4 +101,45 @@ def flip(tri: DCEL, edge: Dart):
     Returns:
         True if the flip was successful.
     """
+    he = edge.aDart
+    twin = he.twin
 
+    a = he.origin
+    b = he.dest
+    c = he.next.dest
+    d = twin.next.dest
+
+    bc = he.next
+    ca = he.next.next
+    ad = twin.next
+    db = twin.next.next
+
+    abc = he.face
+    abd = twin.face
+
+    he.origin = c
+    he.dest = d
+    c.aDart = he
+    bc.next = he
+    he.prev = bc
+    he.next = db
+    db.prev = he
+    abc.aDart = he
+    he.face = abc
+    bc.face = abc
+    db.face = abc
+    b.aDart = bc # Not sure if this is right
+
+    twin.origin = d
+    twin.dest = c
+    d.aDart = twin
+    ad.next = twin
+    twin.prev = ad
+    twin.next = ca
+    ca.prev = twin
+    abd.aDart = twin
+    twin.face = abd
+    ca.face = abd
+    ad.face = abd
+    a.aDart = ad # Not sure if this is right
+    
