@@ -15,7 +15,7 @@ def calculateFlipPath(triA: DCEL, triB: DCEL):
     # Find the flip path between each trianguation and the canonical triangulation (c)
     aToC = triToCanonical(triA)
     bToC = triToCanonical(triB)
-    cToB = bToC[::-1]
+    cToB = bToC.reverse()
 
     # return the concat of aToC with the reverse of bToC (cToB) 
     return aToC + cToB
@@ -51,7 +51,6 @@ def triToCanonical(tri: DCEL):
         vert.neighborsB = vert in bNeighbors
 
     while True:
-        aSide = True
         uw = None
         for edge in dTri.edges:
             endPts = edge.endPoints()
@@ -60,12 +59,38 @@ def triToCanonical(tri: DCEL):
             bothNeighborA = endPts[0].neighborsA and endPts[1].neighborsA
             bothNeighborB = endPts[0].neighborsB and endPts[1].neighborsB
             if bothNeighborA and not bothNeighborB:
+                next = False
+                # Check that v is not adjacent to a,
+                # and update v's neighbor status
+                for face in uw.incidentFaces():
+                    for v in face.verticies():
+                        if v != a and v != uw.endPoints()[0] and v != uw.endPoints()[1]:
+                            if v.neighborsA:
+                                next = True
+                                break
+                            else:
+                                v.neighborsA = True
+                                break
+
+                if next: continue
                 uw = edge
-                aSide = True
                 break
             if bothNeighborB and not bothNeighborA:
+                next = False
+                # Check that v is not adjacent to b,
+                # and update v's neighbor status
+                for face in uw.incidentFaces():
+                    for v in face.verticies():
+                        if v != b and v != uw.endPoints()[0] and v != uw.endPoints()[1]:
+                            if v.neighborsB:
+                                next = True
+                                break
+                            else:
+                                v.neighborsB = True
+                                break
+
+                if next: continue
                 uw = edge
-                aSide = False
                 break
 
 
@@ -79,19 +104,10 @@ def triToCanonical(tri: DCEL):
         # Flip the edge uw
         flip(dTri, uw)
 
-        # Update v's neighbor status
-        for face in uw.incidentFaces():
-            for v in face.verticies():
-                if v != a and v != uw.endPoints()[0] and v != uw.endPoints()[1]:
-                    if aSide:
-                        v.neighborsA = True
-                    else:
-                        v.neighborsB = True
-
     return path
 
 
-def flip(tri: DCEL, edge: Edge):
+def flip(edge: Edge):
     """Flips the shared edge of two triangulations. 
     
     Args:
@@ -128,7 +144,7 @@ def flip(tri: DCEL, edge: Edge):
     he.face = abc
     bc.face = abc
     db.face = abc
-    b.aDart = bc # Not sure if this is right
+    b.aDart = bc
 
     twin.origin = d
     twin.dest = c
@@ -141,5 +157,5 @@ def flip(tri: DCEL, edge: Edge):
     twin.face = abd
     ca.face = abd
     ad.face = abd
-    a.aDart = ad # Not sure if this is right
+    a.aDart = ad
     
