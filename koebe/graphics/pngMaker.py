@@ -19,7 +19,6 @@ class PngMaker:
     # @param drawE2Graph turn on and off the euclidian graph
     def generatePNG(self, saveLocation="../a.png", drawCircles=True, drawH2Graph=True, drawE2Graph=True):
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 1028, 1028)
-        surface.restrict_to_version(cairo.SVG_VERSION_1_2)
         ctx = cairo.Context(surface)
         ctx.scale(512, 512)
         ctx.set_source_rgb(0, 0, 0)
@@ -77,22 +76,21 @@ class PngMaker:
 
     def generateEmbeddingPNG(self, saveLocation="../a.png"):
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 1028, 1028)
-        surface.restrict_to_version(cairo.SVG_VERSION_1_2)
         ctx = cairo.Context(surface)
         ctx.scale(512, 512)
-        ctx.set_source_rgb(0, 0, 0)
+        ctx.set_source_rgb(255, 0, 0)
         ctx.set_line_width(0.005)
         ctx.translate(1, 1)
 
         visited = set()
         for v in self.packing.verts:
-            curPoint = v.data.toPointE2()
+            curPoint = v.data
             ctx.move_to(curPoint.x, curPoint.y)
             neighbors = v.neighbors()
             for n in neighbors:
                 if n in visited:
                     continue
-                curNeighbor = n.data.toPointE2()
+                curNeighbor = n.data
                 ctx.line_to(curNeighbor.x, curNeighbor.y)
                 ctx.move_to(curPoint.x, curPoint.y)
             visited.add(v)
