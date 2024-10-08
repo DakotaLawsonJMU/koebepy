@@ -1,8 +1,8 @@
-from koebepy.koebe.algorithms.flipPather import *
-from koebepy.koebe.algorithms.incrementalConvexHull import randomConvexHullE3, incrConvexHull, orientationPointE3
-from koebepy.koebe.algorithms.tutteEmbeddings import tutteEmbeddingE2
-from koebepy.koebe.geometries.euclidean3 import PointE3
-from koebepy.koebe.graphics.pngMaker import PngMaker
+from koebe.algorithms.flipPather import *
+from koebe.algorithms.incrementalConvexHull import randomConvexHullE3, incrConvexHull, orientationPointE3
+from koebe.algorithms.tutteEmbeddings import tutteEmbeddingE2
+from koebe.geometries.euclidean3 import PointE3
+from koebe.graphics.pngMaker import PngMaker
 
 
 def testTriToCanon():
@@ -60,33 +60,32 @@ def testTriToTri():
         i += 1
 
 def testFlip():
-    # Sample 4 points to make the simplest triangulation
-    points = [PointE3(1, 0, -1), PointE3(-1, 0, -1), PointE3(0, 1, -1), PointE3(0, -1, -1)]
-    tri = incrConvexHull(points, orientationPointE3)
+    # Sample 5 points to make the simplest flipable triangulation
+    tri = randomConvexHullE3(5)
     tri.outerFace = tri.outerFace = tri.faces[0]
     tutteGraph = tutteEmbeddingE2(tri)
 
     # Genereate image for before the flip
     png = PngMaker(tutteGraph)
-    png.generateEmbeddingPNG("../flipTests/flipTestBefore")
+    png.generateEmbeddingPNG("./flipTests/flipTestBefore.png")
 
-    # Find the center edge and flip it
-    verts = tri.verts
+    # Find a flipable edge and flip it
     for edge in tri.edges:
         ends = edge.endPoints()
-        if (ends[0] == verts[0] and ends[1] == verts[2]) or (ends[0] == verts[0] and ends[1] == verts[2]):
+        if (ends[0] not in tri.boundaryVerts() and ends[1] not in tri.boundaryVerts()):
             flip(edge)
             break
 
+    # Regenerate Embedding
+    tutteGraph = tutteEmbeddingE2(tri)
+
     # Generate image for after the flip
     png = PngMaker(tutteGraph)
-    png.generateEmbeddingPNG("../flipTests/flipTestAfter")
+    png.generateEmbeddingPNG("./flipTests/flipTestAfter.png")
 
 
 def main():
     testFlip()
-    testTriToCanon()
-    testTriToTri()
 
 if __name__ == "__main__":
     main()

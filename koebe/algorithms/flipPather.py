@@ -134,28 +134,23 @@ def flip(edge: Edge):
     abd = twin.face
 
     he.origin = c
-    he.dest = d
     c.aDart = he
     bc.next = he
     he.prev = bc
     he.next = db
     db.prev = he
     abc.aDart = he
-    he.face = abc
     bc.face = abc
     db.face = abc
     b.aDart = bc
 
     twin.origin = d
-    twin.dest = c
     d.aDart = twin
     ad.next = twin
     twin.prev = ad
     twin.next = ca
     ca.prev = twin
     abd.aDart = twin
-    twin.face = abd
     ca.face = abd
     ad.face = abd
     a.aDart = ad
-    
