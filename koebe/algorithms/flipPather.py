@@ -139,6 +139,8 @@ def flip(edge: Edge):
     he.prev = bc
     he.next = db
     db.prev = he
+    db.next = bc
+    bc.prev = db
     abc.aDart = he
     bc.face = abc
     db.face = abc
@@ -149,6 +151,8 @@ def flip(edge: Edge):
     ad.next = twin
     twin.prev = ad
     twin.next = ca
+    ca.next = ad
+    ad.prev = ca
     ca.prev = twin
     abd.aDart = twin
     ca.face = abd
