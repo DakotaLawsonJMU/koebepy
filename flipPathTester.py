@@ -13,7 +13,7 @@ def testTriToCanon():
 
     # Genereate image for before any flips
     png = PngMaker(tutteGraph)
-    png.generateEmbeddingPNG("../flipTests/canon/canonTestBefore")
+    png.generateEmbeddingPNG("./flipTests/canon/canonTestBefore.png")
 
     # Generate the flip path
     path = triToCanonical(tri)
@@ -24,7 +24,7 @@ def testTriToCanon():
         flip(edge)
         tutteGraph = tutteEmbeddingE2(tri)
         png = PngMaker(tutteGraph)
-        filename = "../flipTests/canon/" + i + ".png"
+        filename = "./flipTests/canon/" + str(i) + ".png"
         png.generateEmbeddingPNG(filename)
         i += 1
 
@@ -41,10 +41,10 @@ def testTriToTri():
 
     # Genereate image for before any flips
     png = PngMaker(tutteGraphA)
-    png.generateEmbeddingPNG("../flipTests/tri/triA")
+    png.generateEmbeddingPNG("./flipTests/tri/triA")
 
     png = PngMaker(tutteGraphB)
-    png.generateEmbeddingPNG("../flipTests/tri/triB")
+    png.generateEmbeddingPNG("./flipTests/tri/triB")
 
     # Generate the flip path
     path = calculateFlipPath(triA, triB)
@@ -55,13 +55,13 @@ def testTriToTri():
         flip(edge)
         tutteGraph = tutteEmbeddingE2(tri)
         png = PngMaker(tutteGraph)
-        filename = "../flipTests/canon/" + i + ".png"
+        filename = "./flipTests/tri/" + str(i) + ".png"
         png.generateEmbeddingPNG(filename)
         i += 1
 
 def testFlip():
     # Sample 5 points to make the simplest flipable triangulation
-    tri = randomConvexHullE3(5)
+    tri = randomConvexHullE3(8)
     tri.outerFace = tri.outerFace = tri.faces[0]
     tutteGraph = tutteEmbeddingE2(tri)
 
@@ -85,7 +85,7 @@ def testFlip():
 
 
 def main():
-    testFlip()
+    testTriToCanon()
 
 if __name__ == "__main__":
     main()

@@ -62,16 +62,15 @@ def triToCanonical(tri: DCEL):
                 next = False
                 # Check that v is not adjacent to a,
                 # and update v's neighbor status
-                for face in uw.incidentFaces():
-                    for v in face.verticies():
-                        if v != a and v != uw.endPoints()[0] and v != uw.endPoints()[1]:
+                for face in edge.incidentFaces():
+                    for v in face.vertices():
+                        if v != a and v != edge.endPoints()[0] and v != edge.endPoints()[1]:
                             if v.neighborsA:
                                 next = True
                                 break
                             else:
                                 v.neighborsA = True
                                 break
-
                 if next: continue
                 uw = edge
                 break
@@ -79,9 +78,9 @@ def triToCanonical(tri: DCEL):
                 next = False
                 # Check that v is not adjacent to b,
                 # and update v's neighbor status
-                for face in uw.incidentFaces():
-                    for v in face.verticies():
-                        if v != b and v != uw.endPoints()[0] and v != uw.endPoints()[1]:
+                for face in edge.incidentFaces():
+                    for v in face.vertices():
+                        if v != b and v != edge.endPoints()[0] and v != edge.endPoints()[1]:
                             if v.neighborsB:
                                 next = True
                                 break
@@ -102,7 +101,7 @@ def triToCanonical(tri: DCEL):
         path.append(uw)
 
         # Flip the edge uw
-        flip(dTri, uw)
+        flip(uw)
 
     return path
 
