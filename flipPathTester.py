@@ -16,17 +16,21 @@ def testTriToCanon():
     png.generateEmbeddingPNG("./flipTests/canon/canonTestBefore.png")
 
     # Generate the flip path
-    path = triToCanonical(tri)
+    path, dtri = triToCanonical(tri)
+
+    tutteGraph = tutteEmbeddingE2(dtri)
+    png = PngMaker(tutteGraph)
+    png.generateEmbeddingPNG("./flipTests/canon/canonTestAfter.png")
 
     # Generate an image for every flip in the path
-    i = 0
-    for edge in path:
-        flip(edge)
-        tutteGraph = tutteEmbeddingE2(tri)
-        png = PngMaker(tutteGraph)
-        filename = "./flipTests/canon/" + str(i) + ".png"
-        png.generateEmbeddingPNG(filename)
-        i += 1
+    # i = 0
+    # for edge in path:
+    #     flip(edge)
+    #     tutteGraph = tutteEmbeddingE2(tri)
+    #     png = PngMaker(tutteGraph)
+    #     filename = "./flipTests/canon/" + str(i) + ".png"
+    #     png.generateEmbeddingPNG(filename)
+    #     i += 1
 
 
 def testTriToTri():

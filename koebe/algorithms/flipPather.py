@@ -14,8 +14,8 @@ def calculateFlipPath(triA: DCEL, triB: DCEL):
     """
     # Find the flip path between each trianguation and the canonical triangulation (c)
     aToC = triToCanonical(triA)
-    bToC = triToCanonical(triB)
-    cToB = bToC.reverse()
+    cToB = triToCanonical(triB)
+    cToB.reverse()
 
     # return the concat of aToC with the reverse of bToC (cToB) 
     return aToC + cToB
@@ -39,11 +39,12 @@ def triToCanonical(tri: DCEL):
     # Init path
     path = []
     
-    # First we start by picking a node for a and b
+    # Pick an a and b
     outerFace = dTri.boundaryVerts()
     a = outerFace[0]
     b = outerFace[1]
 
+    # Label all verts neighbor status
     aNeighbors = a.neighbors()
     bNeighbors = b.neighbors()
     for vert in dTri.verts:
@@ -69,7 +70,9 @@ def triToCanonical(tri: DCEL):
                                 next = True
                                 break
                             else:
-                                v.neighborsA = True
+                                for n in v.neighbors():
+                                    if n == a:
+                                        v.neighborsA = True
                                 break
                 if next: continue
                 uw = edge
@@ -85,7 +88,9 @@ def triToCanonical(tri: DCEL):
                                 next = True
                                 break
                             else:
-                                v.neighborsB = True
+                                for n in v.neighbors():
+                                    if n == b:
+                                        v.neighborsB = True
                                 break
 
                 if next: continue
@@ -103,7 +108,7 @@ def triToCanonical(tri: DCEL):
         # Flip the edge uw
         flip(uw)
 
-    return path
+    return path, dTri
 
 
 def flip(edge: Edge):
