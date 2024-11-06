@@ -1,4 +1,4 @@
-from koebe.algorithms.flipPather import *
+from koebe.algorithms.flipPatherOld import *
 from koebe.algorithms.incrementalConvexHull import randomConvexHullE3, incrConvexHull, orientationPointE3
 from koebe.algorithms.tutteEmbeddings import tutteEmbeddingE2
 from koebe.geometries.euclidean3 import PointE3
