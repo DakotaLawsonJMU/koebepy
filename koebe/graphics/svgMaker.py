@@ -75,3 +75,4 @@ class SvgMaker:
 
         surface.flush()
         surface.finish()
+        

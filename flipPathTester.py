@@ -2,7 +2,7 @@ from koebe.algorithms.flipPatherOld import *
 from koebe.algorithms.incrementalConvexHull import randomConvexHullE3, incrConvexHull, orientationPointE3
 from koebe.algorithms.tutteEmbeddings import tutteEmbeddingE2
 from koebe.geometries.euclidean3 import PointE3
-from koebe.graphics.pngMaker import PngMaker
+from koebe.graphics.svgMaker import SvgMaker
 
 
 def testTriToCanon():
@@ -19,8 +19,8 @@ def testTriToCanon():
     path, dtri = triToCanonical(tri)
 
     tutteGraph = tutteEmbeddingE2(dtri)
-    png = PngMaker(tutteGraph)
-    png.generateEmbeddingPNG("./flipTests/canon/canonTestAfter.png")
+    png = SvgMaker(tutteGraph)
+    png.generateEmbeddingSVG("./flipTests/canon/canonTestAfter.png")
 
     # Generate an image for every flip in the path
     # i = 0
